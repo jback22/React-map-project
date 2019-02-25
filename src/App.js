@@ -156,7 +156,7 @@ class App extends Component {
           >
 
             <Popup>
-              <Button onClick={this.openForm} color="info">Add here as a station</Button>
+              <Button onClick={this.openForm} color="info">Add here as a station!</Button>
             </Popup>
           </Marker>
           
