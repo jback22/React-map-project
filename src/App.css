@@ -1,0 +1,47 @@
+
+
+body{
+  margin: 0px;
+  width: 100vw;
+  height: 100vh;
+}
+#root{
+  height: 100%;
+}
+.map{
+  height: 700px;
+
+}
+
+.add-station-form{
+  z-index: 999;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+}
+.search-form{
+  z-index: 999;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20%;
+  background: rgb(113, 116, 113);
+  color: rgb(45, 55, 66);
+
+}
+.StationList{
+  z-index: 999;
+  position: absolute;
+  top: 10%;
+  left: 30px;
+}
+.toggle{
+  z-index: 999;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+
+
+}
+
