@@ -1,68 +1,79 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Reactjs Map Project
 
-## Available Scripts
+## Requirements
 
-In the project directory, you can run:
+For development, you will only need Node.js installed on your environement.
+And please use the appropriate [Editorconfig](http://editorconfig.org/) plugin for your Editor (not mandatory).
 
-### `npm start`
+### Node
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+[Node](http://nodejs.org/) is really easy to install & now include [NPM](https://npmjs.org/).
+You should be able to run the following command after the installation procedure
+below.
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+    $ node --version
+    v0.10.24
 
-### `npm test`
+    $ npm --version
+    1.3.21
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### Node installation on OS X
 
-### `npm run build`
+You will need to use a Terminal. On OS X, you can find the default terminal in
+`/Applications/Utilities/Terminal.app`.
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Please install [Homebrew](http://brew.sh/) if it's not already done with the following command.
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+    $ ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+If everything when fine, you should run
 
-### `npm run eject`
+    brew install node
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+#### Node installation on Linux
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+    sudo apt-get install python-software-properties
+    sudo add-apt-repository ppa:chris-lea/node.js
+    sudo apt-get update
+    sudo apt-get install nodejs
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+#### Node installation on Windows
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Just go on [official Node.js website](http://nodejs.org/) & grab the installer.
+Also, be sure to have `git` available in your PATH, `npm` might need it.
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Install
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+    $ git clone https://github.com/jback22/React-map-project.git
+    $ cd React-map-project
+    $ npm install
 
-### Code Splitting
+## Start & watch
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+    $ npm start
 
-### Analyzing the Bundle Size
+## Simple build for production
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+    $ npm run build
 
-### Making a Progressive Web App
+## Getting started with Json Server
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+Install JSON Server 
 
-### Advanced Configuration
+```
+npm install -g json-server
+```
+Start JSON Server
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
+```bash
+json-server --watch db.json
+```
+or 
 
-### Deployment
+Run JSON Server on port 3001
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+```
+json-server --watch api/db.json --port 3001
+```
