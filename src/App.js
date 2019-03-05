@@ -4,17 +4,97 @@ import { ListGroup, ListGroupItem, Collapse, CardBody, Card, Button, CardTitle, 
 import axios from 'axios';
 import L from 'leaflet';
 
+// import { ReactChartkick, LineChart, PieChart, ColumnChart, BarChart, AreaChart } from 'react-chartkick';
+// import Chart from 'chart.js';
+import Chart from 'react-apexcharts';
 
 
 import './App.css';
 
 var myIcon = L.icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.4.0/dist/images/marker-icon.png',
-  iconSize: [25, 41],
+  iconUrl: 'https://cdn4.iconfinder.com/data/icons/location-flat/64/Location-map-pin-marker-favorite-place-256.png',
+  iconSize: [40, 45],
   iconAnchor: [12.5, 41],
-  popupAnchor: [0, -41],
+  popupAnchor: [7, -41],
 });
+var myAddIcon = L.icon({
+  iconUrl: 'https://cdn3.iconfinder.com/data/icons/maps-and-location-6/16/16_pin-map-location-navigation-plus-256.png',
+  iconSize: [50, 55],
+  iconAnchor: [12.5, 41],
+  popupAnchor: [7, -41],
+});
+var data1 = [
+  { "name": "Workout", "data": { "2017-01-01": 3, "2017-01-02": 4 } },
+  { "name": "Call parents", "data": { "2017-01-01": 5, "2017-01-02": 3 } }
+];
+var options = {
+  chart: {
+    height: 350,
+    type: 'line',
+    shadow: {
+      enabled: true,
+      color: '#000',
+      top: 18,
+      left: 7,
+      blur: 10,
+      opacity: 1
+    },
+    toolbar: {
+      show: false
+    }
+  },
+  colors: ['#77B6EA', '#545454'],
+  dataLabels: {
+    enabled: true,
+  },
+  stroke: {
+    curve: 'smooth'
+  },
+  series: [{
+    name: "High - 2013",
+    data: [28, 29, 33, 36, 32, 32, 33]
+  },
+  {
+    name: "Low - 2013",
+    data: [12, 11, 14, 18, 17, 13, 13]
+  }
+  ],
+  title: {
+    text: 'Average High & Low Temperature',
+    align: 'left'
+  },
+  grid: {
+    borderColor: '#e7e7e7',
+    row: {
+      colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+      opacity: 0.5
+    },
+  },
+  markers: {
 
+    size: 6
+  },
+  xaxis: {
+    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+    title: {
+      text: 'Month'
+    }
+  },
+  yaxis: {
+    title: {
+      text: 'Temperature'
+    },
+    min: 5,
+    max: 40
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'right',
+    floating: true,
+    offsetY: -25,
+    offsetX: -5
+  }
+}
 
 class App extends Component {
   state = {
@@ -23,15 +103,46 @@ class App extends Component {
       lng: 34.94750976562501
     },
     haveUserLocation: false,
-    zoom: 6.1,
+    zoom: 6.5,
     formVisible: false,
+    chartVisible: false,
     UpdateformVisible: false,
     collapse: false,
     stations: [],
+    data_1h: [],
+    data_1h_time: [],
+    data_1h_temperature: [],
+    data_1h_felttemperature: [],
+    data_1h_windspeed: [],
+    data_1h_precipitation_probability: [],
+    data_day: [],
+    data_day_time: [],
+    data_day_temperature_max: [],
+    data_day_temperature_min: [],
+    data_day_precipitation_probability: [],
+    data_day_precipitation: [],
+    data_day_windspeed_max: [],
+    data_day_windspeed_min: [],
+    data_day_relativehumidity_max: [],
+    data_day_relativehumidity_min: [],
+    data_day_relativehumidity_mean: [],
     name: '',
     city_name: '',
     searchs: [],
-    city_id: ''
+    city_id: '',
+    options: {
+      chart: {
+        id: 'apexchart-example'
+      },
+      xaxis: {
+        categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
+      }
+    },
+    series: [{
+      name: 'series-1',
+      data: [30, 40, 45, 50, 49, 60, 70, 91]
+    }]
+
 
   }
   componentDidMount = async () => {
@@ -41,6 +152,45 @@ class App extends Component {
         const stations = res.data;
         this.setState({ stations });
       })
+
+    await axios.get(`http://localhost:3001/data_1h`)
+      .then(res => {
+        const data_1h = res.data;
+        const data_1h_time = res.data.time;
+        const data_1h_temperature = res.data.temperature;
+        const data_1h_felttemperature = res.data.felttemperature;
+        const data_1h_precipitation_probability = res.data.precipitation_probability;
+        const data_1h_windspeed = res.data.windspeed;
+
+        this.setState({
+          data_1h, data_1h_time, data_1h_temperature, data_1h_felttemperature, data_1h_precipitation_probability,
+          data_1h_windspeed
+        });
+      })
+    await axios.get(`http://localhost:3001/data_day`)
+      .then(res => {
+        const data_day = res.data.time;
+        const data_day_time = res.data.time;
+        const data_day_temperature_max = res.data.temperature_max;
+        const data_day_temperature_min = res.data.temperature_min;
+        const data_day_precipitation_probability = res.data.precipitation_probability;
+        const data_day_precipitation = res.data.precipitation;
+        const data_day_windspeed_max = res.data.windspeed_max;
+        const data_day_windspeed_min = res.data.windspeed_min;
+        const data_day_relativehumidity_max = res.data.relativehumidity_max;
+        const data_day_relativehumidity_min = res.data.relativehumidity_min;
+        const data_day_relativehumidity_mean = res.data.relativehumidity_mean;
+        this.setState({
+          data_day, data_day_precipitation, data_day_precipitation_probability, data_day_relativehumidity_max,
+          data_day_relativehumidity_mean, data_day_relativehumidity_min, data_day_temperature_max, data_day_temperature_min,
+          data_day_time, data_day_windspeed_max, data_day_windspeed_min
+        });
+        console.log(res.data.time);
+
+
+      })
+
+
 
 
   }
@@ -177,7 +327,16 @@ class App extends Component {
     this.setState({
       formVisible: !this.state.formVisible
     })
-    console.log(this.state.formVisible);
+
+
+  }
+  //Opens chart
+  openChart = (event) => {
+    this.setState({
+      chartVisible: !this.state.chartVisible
+    });
+   
+
 
   }
   //opens update form
@@ -218,7 +377,7 @@ class App extends Component {
 
 
           <Marker
-            icon={myIcon}
+            icon={myAddIcon}
             position={this.state.location}
             draggable={true}
             ondragend={this.DragEndEvent}
@@ -247,11 +406,11 @@ class App extends Component {
             <Marker
               key={station._id}
               position={[station.lat, station.lng]}
-              draggable={true}
+              draggable={false}
               icon={myIcon}>
               <Popup>
 
-                <p>
+                <p style={{ textTransform: "uppercase", fontWeight: "bold" }}>
                   {station.name}
                 </p>
 
@@ -273,14 +432,14 @@ class App extends Component {
                             name="name"
                             placeholder="New Station Name"
                             required
-                           
+
                           />
                         </FormGroup>
                         <FormGroup>
                           <p>Location:<br />{this.state.location.lat}<br />{this.state.location.lng}</p>
 
                         </FormGroup>
-                        <Button onClick={this.openUpdateForm }type="submit" color="info" >Add</Button>
+                        <Button onClick={this.openUpdateForm} type="submit" color="info" >Add</Button>
                       </Form>
 
                     </Card>
@@ -309,9 +468,9 @@ class App extends Component {
                   id="name"
                   placeholder="Enter a City Name"
                   required
-                  
+
                 />
-               
+
                 <Button onClick={this.searchStation} color="primary" className="float-right" style={{ marginTop: '5px' }}>Search</Button>
               </CardBody>
             </Card>
@@ -349,14 +508,15 @@ class App extends Component {
 
         <div className="StationList">
           <Card>
-            <Label style={{ textAlign: "center", textDecoration: "bold" }}><b></b>Stations</Label>
+            <Label style={{ textAlign: "center", textTransform: "uppercase", fontWeight: "bold" }}><b>Stations</b></Label>
 
             {/* Listing stations */}
             <ListGroup>
 
               {this.state.stations.map(station =>
-                <ListGroupItem tag="button" onClick={this.deleteStation}>
+                <ListGroupItem tag="button" onClick={this.openChart }  style={{ textAlign: "center", textTransform: "uppercase" }}>
                   {station.name}
+                  
 
 
                 </ListGroupItem>)
@@ -365,6 +525,16 @@ class App extends Component {
 
 
           </Card>
+        </div>
+
+        <div className={"chart"} style={{ width: "4%", height: "39%" }}>
+          {
+            this.state.chartVisible ?
+              <Card style={{ width: "fit-content" }}>
+                <Chart options={options} series={options.series} type="bar" width={500} height={320} />
+              </Card>
+              : null
+          }
         </div>
       </div>
 
