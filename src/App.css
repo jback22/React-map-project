@@ -35,6 +35,11 @@ body{
   position: absolute;
   top: 10%;
   left: 30px;
+  
+  width: 12%;
+}
+#StationList{
+  background-color: khaki;
 }
 .toggle{
   z-index: 999;
@@ -61,4 +66,21 @@ body{
   left: 29px;
   /* background-color: ivory; */
 
+}
+.btn{
+  border-radius: 1.25rem;
+}
+.btn {
+  background-color: DodgerBlue; /* Blue background */
+  border: none; /* Remove borders */
+  color: white; /* White text */
+  padding: 12px 16px; /* Some padding */
+  font-size: 16px; /* Set a font size */
+  cursor: pointer; /* Mouse pointer on hover */
+  border-radius: 1.25rem; /* kenarlari yuvarlatiyo*/
+}
+
+/* Darker background on mouse-over */
+.btn:hover {
+  background-color: RoyalBlue;
 }

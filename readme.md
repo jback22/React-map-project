@@ -9,3 +9,14 @@
 []
 []
 []
+
+
+
+
+***********
+chartlar icin sunu yapicam 
+jsonlari react chartin datasina gore birlestircem
+sonra
+haftalik saatlik tahmin icin gun gun gostercek degerleri 
+sonra haftalik tahmin icin de hepsini birden gostericek
+jsonlari birlestirmeyi ogrenmem gerekiyo

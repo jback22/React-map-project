@@ -6,6 +6,9 @@ import L from 'leaflet';
 
 // import { ReactChartkick, LineChart, PieChart, ColumnChart, BarChart, AreaChart } from 'react-chartkick';
 // import Chart from 'chart.js';
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+} from 'recharts';
 import Chart from 'react-apexcharts';
 
 
@@ -95,6 +98,50 @@ var options = {
     offsetX: -5
   }
 }
+const data = [
+  {
+    "name": "Page A",
+    "uv": 4000,
+    "pv": 2400,
+    "amt": 2400
+  },
+  {
+    "name": "Page B",
+    "uv": 3000,
+    "pv": 1398,
+    "amt": 2210
+  },
+  {
+    "name": "Page C",
+    "uv": 2000,
+    "pv": 9800,
+    "amt": 2290
+  },
+  {
+    "name": "Page D",
+    "uv": 2780,
+    "pv": 3908,
+    "amt": 2000
+  },
+  {
+    "name": "Page E",
+    "uv": 1890,
+    "pv": 4800,
+    "amt": 2181
+  },
+  {
+    "name": "Page F",
+    "uv": 2390,
+    "pv": 3800,
+    "amt": 2500
+  },
+  {
+    "name": "Page G",
+    "uv": 3490,
+    "pv": 4300,
+    "amt": 2100
+  }
+]
 
 class App extends Component {
   state = {
@@ -335,7 +382,7 @@ class App extends Component {
     this.setState({
       chartVisible: !this.state.chartVisible
     });
-   
+
 
 
   }
@@ -389,7 +436,7 @@ class App extends Component {
 
                 <Popup >
                   <p>Please fill the Form!  </p>
-                  <Button onClick={this.openForm} color="info">Close Form</Button>
+                  <Button onClick={this.openForm} color="info"><i class="fa fa-close"></i> Close</Button>
                 </Popup>
                 :
 
@@ -414,13 +461,14 @@ class App extends Component {
                   {station.name}
                 </p>
 
-                <Button onClick={this.deleteStation.bind(this, station.id)}>Sil</Button>
-                <Button onClick={this.openUpdateForm}>Düzenle</Button>
+                <Button onClick={this.deleteStation.bind(this, station.id)}><i class="fa fa-trash"></i></Button>
+                &emsp;
+                <Button onClick={this.openUpdateForm}><i class="far fa-edit"></i></Button>
                 {
                   this.state.UpdateformVisible
                     ?
                     <Card body className="update-station-form" >
-                      <Button onClick={this.openUpdateForm} color="info">Close</Button>
+                      <Button onClick={this.openUpdateForm} color="info"><i class="fa fa-close"></i> Close</Button>
                       <CardTitle>Welcome to Update station form!</CardTitle>
 
                       <Form onSubmit={this.updateStation.bind(this, station.id)}>
@@ -456,7 +504,7 @@ class App extends Component {
         </Map>
 
         <div className="toggle">
-          <Button color="primary" onClick={this.toggle} style={{ marginBottom: '1rem' }}>Add Station</Button>
+          <Button color="primary" onClick={this.toggle} style={{ marginBottom: '1rem' }}><i class="fas fa-plus"></i> &emsp;Add Station</Button>
           <Collapse isOpen={this.state.collapse}>
             <Card className="Search-city">
               <CardBody>
@@ -481,7 +529,7 @@ class App extends Component {
           this.state.formVisible
             ?
             <Card body className="add-station-form" >
-              <Button onClick={this.openForm} color="info">Close</Button>
+              <Button onClick={this.openForm} color="info"><i class="fa fa-close"></i></Button>
               <CardTitle>Welcome to Adding station page!</CardTitle>
 
               <Form onSubmit={this.handleSubmit}>
@@ -506,17 +554,17 @@ class App extends Component {
             : null
         }
 
-        <div className="StationList">
-          <Card>
-            <Label style={{ textAlign: "center", textTransform: "uppercase", fontWeight: "bold" }}><b>Stations</b></Label>
+        <div className="StationList" >
+          <Card id="StationList">
+            <Label  style={{ textAlign: "center", textTransform: "uppercase", fontWeight: "bold" }}><b>Stations</b></Label>
 
             {/* Listing stations */}
-            <ListGroup>
+            <ListGroup >
 
               {this.state.stations.map(station =>
-                <ListGroupItem tag="button" onClick={this.openChart }  style={{ textAlign: "center", textTransform: "uppercase" }}>
+                <ListGroupItem className="list-group-item list-group-item-warning" tag="button" onClick={this.openChart} style={{ textAlign: "center", textTransform: "uppercase" }}>
                   {station.name}
-                  
+
 
 
                 </ListGroupItem>)
@@ -531,7 +579,17 @@ class App extends Component {
           {
             this.state.chartVisible ?
               <Card style={{ width: "fit-content" }}>
-                <Chart options={options} series={options.series} type="bar" width={500} height={320} />
+                {/* <Chart options={options} series={options.series} type="bar" width={500} height={320} /> */}
+                <LineChart width={730} height={250} data={data}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="pv" stroke="#8884d8" />
+                  <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+                </LineChart>
               </Card>
               : null
           }
