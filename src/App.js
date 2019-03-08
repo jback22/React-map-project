@@ -7,9 +7,8 @@ import L from 'leaflet';
 // import { ReactChartkick, LineChart, PieChart, ColumnChart, BarChart, AreaChart } from 'react-chartkick';
 // import Chart from 'chart.js';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, RadialBar, RadialBarChart, BarChart, Bar
 } from 'recharts';
-import Chart from 'react-apexcharts';
 
 
 import './App.css';
@@ -26,78 +25,7 @@ var myAddIcon = L.icon({
   iconAnchor: [12.5, 41],
   popupAnchor: [7, -41],
 });
-var data1 = [
-  { "name": "Workout", "data": { "2017-01-01": 3, "2017-01-02": 4 } },
-  { "name": "Call parents", "data": { "2017-01-01": 5, "2017-01-02": 3 } }
-];
-var options = {
-  chart: {
-    height: 350,
-    type: 'line',
-    shadow: {
-      enabled: true,
-      color: '#000',
-      top: 18,
-      left: 7,
-      blur: 10,
-      opacity: 1
-    },
-    toolbar: {
-      show: false
-    }
-  },
-  colors: ['#77B6EA', '#545454'],
-  dataLabels: {
-    enabled: true,
-  },
-  stroke: {
-    curve: 'smooth'
-  },
-  series: [{
-    name: "High - 2013",
-    data: [28, 29, 33, 36, 32, 32, 33]
-  },
-  {
-    name: "Low - 2013",
-    data: [12, 11, 14, 18, 17, 13, 13]
-  }
-  ],
-  title: {
-    text: 'Average High & Low Temperature',
-    align: 'left'
-  },
-  grid: {
-    borderColor: '#e7e7e7',
-    row: {
-      colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
-      opacity: 0.5
-    },
-  },
-  markers: {
 
-    size: 6
-  },
-  xaxis: {
-    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-    title: {
-      text: 'Month'
-    }
-  },
-  yaxis: {
-    title: {
-      text: 'Temperature'
-    },
-    min: 5,
-    max: 40
-  },
-  legend: {
-    position: 'top',
-    horizontalAlign: 'right',
-    floating: true,
-    offsetY: -25,
-    offsetX: -5
-  }
-}
 const data = [
   {
     "name": "Page A",
@@ -153,7 +81,13 @@ class App extends Component {
     zoom: 6.5,
     formVisible: false,
     chartVisible: false,
+    radialChartVisible: false,
+    barChartVisible: false,
+    dataDayVisible: false,
+    data1hVisible: false,
+    lineChartVisible: true,
     UpdateformVisible: false,
+    chartButtonid: "Radial Chart",
     collapse: false,
     stations: [],
     data_1h: [],
@@ -162,6 +96,7 @@ class App extends Component {
     data_1h_felttemperature: [],
     data_1h_windspeed: [],
     data_1h_precipitation_probability: [],
+    data_1hchart: [],
     data_day: [],
     data_day_time: [],
     data_day_temperature_max: [],
@@ -170,25 +105,16 @@ class App extends Component {
     data_day_precipitation: [],
     data_day_windspeed_max: [],
     data_day_windspeed_min: [],
+    data_day_windspeed_mean: [],
     data_day_relativehumidity_max: [],
     data_day_relativehumidity_min: [],
     data_day_relativehumidity_mean: [],
+    data_daychart: [],
     name: '',
     city_name: '',
     searchs: [],
     city_id: '',
-    options: {
-      chart: {
-        id: 'apexchart-example'
-      },
-      xaxis: {
-        categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
-      }
-    },
-    series: [{
-      name: 'series-1',
-      data: [30, 40, 45, 50, 49, 60, 70, 91]
-    }]
+
 
 
   }
@@ -223,6 +149,7 @@ class App extends Component {
         const data_day_precipitation_probability = res.data.precipitation_probability;
         const data_day_precipitation = res.data.precipitation;
         const data_day_windspeed_max = res.data.windspeed_max;
+        const data_day_windspeed_mean = res.data.windspeed_mean;
         const data_day_windspeed_min = res.data.windspeed_min;
         const data_day_relativehumidity_max = res.data.relativehumidity_max;
         const data_day_relativehumidity_min = res.data.relativehumidity_min;
@@ -230,12 +157,14 @@ class App extends Component {
         this.setState({
           data_day, data_day_precipitation, data_day_precipitation_probability, data_day_relativehumidity_max,
           data_day_relativehumidity_mean, data_day_relativehumidity_min, data_day_temperature_max, data_day_temperature_min,
-          data_day_time, data_day_windspeed_max, data_day_windspeed_min
+          data_day_time, data_day_windspeed_max, data_day_windspeed_min, data_day_windspeed_mean
         });
         console.log(res.data.time);
 
 
       })
+
+
 
 
 
@@ -320,8 +249,66 @@ class App extends Component {
 
 
   }
+  getChartData = async (e) => {
+
+    await axios.get(`http://localhost:3001/data_daychart`)
+      .then(res => {
+        const data_daychart = res.data;
+        this.setState({
+          data_daychart,
+          chartVisible: !this.state.chartVisible
+        });
+      })
+    if (this.state.data_daychart.length <= 0) {
+      for (var i = 0; i < this.state.data_day_time.length; i++) {
+        let name = this.state.data_day_time[i];
+        let temperature_max = this.state.data_day_temperature_max[i];
+        let temperature_min = this.state.data_day_temperature_min[i];
+        let precipitation_probability = this.state.data_day_precipitation_probability[i];
+        let precipitation = this.state.data_day_precipitation[i];
+        let windspeed_max = this.state.data_day_windspeed_max[i];
+        let windspeed_mean = this.state.data_day_windspeed_mean[i];
+        let windspeed_min = this.state.data_day_windspeed_min[i];
+        let relativehumidity_max = this.state.data_day_relativehumidity_max[i];
+        let relativehumidity_min = this.state.data_day_relativehumidity_min[i];
+        let relativehumidity_mean = this.state.data_day_relativehumidity_mean[i];
+        const data_daychart = {
+          name, temperature_max, temperature_min, precipitation_probability, windspeed_max, precipitation, windspeed_mean,
+          windspeed_min, relativehumidity_max, relativehumidity_min, relativehumidity_mean
+        }
+        await axios.post(`http://localhost:3001/data_daychart`, data_daychart)
+
+      }
+    }
 
 
+
+    await axios.get(`http://localhost:3001/data_1hchart`)
+      .then(res => {
+        const data_1hchart = res.data;
+        this.setState({
+          data_1hchart,
+        });
+      })
+    if (this.state.data_1hchart.length <= 0) {
+      for (var j = 0; j < this.state.data_1h_time.length; j++) {
+        let name = this.state.data_1h_time[j];
+        let temperature = this.state.data_1h_temperature[j];
+        let felttemperature = this.state.data_1h_felttemperature[j];
+        let windspeed = this.state.data_1h_windspeed[j];
+        let precipitation_probability = this.state.data_1h_precipitation_probability[j];
+
+        const data_1hchart = {
+          name, temperature, felttemperature, windspeed, precipitation_probability
+        }
+        await axios.post(`http://localhost:3001/data_1hchart`, data_1hchart)
+
+      }
+    }
+
+
+
+  }
 
   // runs when form submitted
   handleSubmit = async (event) => {
@@ -349,6 +336,7 @@ class App extends Component {
   //station submit buttton events
   handleChange = event => {
     this.setState({ name: event.target.value });
+    
   }
 
   //search butonundan city name i alıp state e yazıyor 
@@ -382,10 +370,50 @@ class App extends Component {
     this.setState({
       chartVisible: !this.state.chartVisible
     });
-
-
-
   }
+  dataDayVisible = (event) => {
+    this.setState({
+      dataDayVisible: !this.state.dataDayVisible,
+      data1hVisible: false,
+
+    });
+  }
+  data1hVisible = (event) => {
+    this.setState({
+      data1hVisible: !this.state.data1hVisible,
+      dataDayVisible: false
+
+
+    });
+  }
+  radialChartVisible = (event) => {
+    this.setState({
+      radialChartVisible: !this.state.radialChartVisible,
+      lineChartVisible: !this.state.lineChartVisible,
+
+
+    });
+  }
+  lineChartVisible = (event) => {
+    this.setState({
+      lineChartVisible: !this.state.lineChartVisible,
+      radialChartVisible: false,
+      barChartVisible: false
+
+
+    });
+  }
+  barChartVisible = (event) => {
+    this.setState({
+      barChartVisible: !this.state.barChartVisible,
+      radialChartVisible: false,
+      lineChartVisible: false,
+
+
+
+    });
+  }
+
   //opens update form
   openUpdateForm = (event) => {
     this.setState({
@@ -530,7 +558,7 @@ class App extends Component {
             ?
             <Card body className="add-station-form" >
               <Button onClick={this.openForm} color="info"><i class="fa fa-close"></i></Button>
-              <CardTitle>Welcome to Adding station page!</CardTitle>
+              <CardTitle>Welcome to Add Station form!</CardTitle>
 
               <Form onSubmit={this.handleSubmit}>
                 <FormGroup>
@@ -556,13 +584,13 @@ class App extends Component {
 
         <div className="StationList" >
           <Card id="StationList">
-            <Label  style={{ textAlign: "center", textTransform: "uppercase", fontWeight: "bold" }}><b>Stations</b></Label>
+            <Label style={{ textAlign: "center", textTransform: "uppercase", fontWeight: "bold" }}><b>Stations</b></Label>
 
             {/* Listing stations */}
             <ListGroup >
 
               {this.state.stations.map(station =>
-                <ListGroupItem className="list-group-item list-group-item-warning" tag="button" onClick={this.openChart} style={{ textAlign: "center", textTransform: "uppercase" }}>
+                <ListGroupItem className="list-group-item list-group-item-warning" tag="button" onClick={this.getChartData} style={{ textAlign: "center", textTransform: "uppercase" }}>
                   {station.name}
 
 
@@ -578,22 +606,116 @@ class App extends Component {
         <div className={"chart"} style={{ width: "4%", height: "39%" }}>
           {
             this.state.chartVisible ?
-              <Card style={{ width: "fit-content" }}>
-                {/* <Chart options={options} series={options.series} type="bar" width={500} height={320} /> */}
-                <LineChart width={730} height={250} data={data}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="pv" stroke="#8884d8" />
-                  <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-                </LineChart>
-              </Card>
+              <div>
+                <Card style={{ width: "max-content" }}>
+                  <Button onClick={this.data1hVisible} color="info">7 gün saatlik tahmin</Button>
+                  <Button onClick={this.dataDayVisible} color="info">7 günlük tahmin</Button>
+                </Card>
+                {
+                  this.state.dataDayVisible ?
+                    <Card style={{ width: "fit-content" }}>
+
+                      {
+                        this.state.lineChartVisible ?
+                          <p style={{ textAlign: "center" }}>Come over the points to see all details</p>
+                          : null
+                      }
+                      {/* <Chart options={options} series={options.series} type="bar" width={500} height={320} /> */}
+                      {
+                        this.state.lineChartVisible ?
+
+                          <LineChart width={730} height={300} data={this.state.data_daychart}
+                            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Line type="monotone" dataKey="temperature_max" stroke="#8884d8" />
+                            <Line type="monotone" dataKey="temperature_min" stroke="#82ca9d" />
+                            <Line type="monotone" dataKey="precipitation_probability" stroke="#82ca9d" />
+                            <Line type="monotone" dataKey="windspeed_max" stroke="#8884d8" />
+                            <Line type="monotone" dataKey="precipitation" stroke="#82ca9d" />
+                            <Line type="monotone" dataKey="windspeed_mean" stroke="#8884d8" />
+                            <Line type="monotone" dataKey="windspeed_min" stroke="#82ca9d" />
+                            <Line type="monotone" dataKey="relativehumidity_max" stroke="#8884d8" />
+                            <Line type="monotone" dataKey="relativehumidity_min" stroke="#82ca9d" />
+                            <Line type="monotone" dataKey="relativehumidity_mean" stroke="#8884d8" />
+
+                          </LineChart>
+
+
+                          : null
+                      }
+                      {
+                        this.state.radialChartVisible ?
+                          <RadialBarChart
+                            width={730}
+                            height={350}
+                            innerRadius="10%"
+                            outerRadius="80%"
+                            data={this.state.data_daychart}
+                            startAngle={180}
+                            endAngle={0}
+                          >
+                            <RadialBar minAngle={15} label={{ fill: '#FFFFFF', position: 'insideStart' }} background clockWise={true} dataKey='temperature_max' />
+                            <Legend iconSize={15} width={120} height={150} layout='vertical' verticalAlign='middle' align="right" />
+                            <Tooltip />
+                          </RadialBarChart>
+                          : null
+                      }
+                      {
+                        this.state.barChartVisible ?
+                          <BarChart width={730} height={250} data={this.state.data_daychart}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="windspeed_mean" fill="#8884d8" />
+                            <Bar dataKey="windspeed_min" fill="#82ca9d" />
+                          </BarChart>
+                          : null
+                      }
+                      <div>
+                        <Button onClick={this.radialChartVisible} color="info">Radial Bar Chart</Button>
+                        <Button onClick={this.lineChartVisible} color="info">Line Chart</Button>
+                        <Button onClick={this.barChartVisible} color="info">Bar Chart</Button>
+
+                      </div>
+
+                    </Card>
+                    : null
+                }
+                {
+                  this.state.data1hVisible ?
+                    <Card style={{ width: "fit-content" }}>
+                      <LineChart width={730} height={300} data={this.state.data_1hchart}
+                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Line type="monotone" dataKey="temperature" stroke="#8884d8" />
+                        <Line type="monotone" dataKey="felttemperature" stroke="#82ca9d" />
+                        <Line type="monotone" dataKey="windspeed" stroke="#8884d8" />
+                        <Line type="monotone" dataKey="precipitation" stroke="#82ca9d" />
+                        <Line type="monotone" dataKey="precipitation_probability" stroke="#8884d8" />
+
+
+                      </LineChart>
+
+                    </Card>
+
+                    : null
+                }
+              </div>
               : null
           }
+
         </div>
+
       </div>
 
     );
