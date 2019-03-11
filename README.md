@@ -75,5 +75,5 @@ or
 Run JSON Server on port 3001
 
 ```
-json-server --watch api/db.json --port 3001
+json-server --watch src/api/db.json --port 3001
 ```
